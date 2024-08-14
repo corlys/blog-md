@@ -1,3 +1,7 @@
+---
+title: Journey To Making a Blog Posts A
+---
+
 ## Hello Guys and Gals
 
 So here began my journey making blog posts because of my current predicament (unemployment)
