@@ -1,0 +1,22 @@
+package views
+
+templ Home(fileNames []string) {
+	@Base() {
+		<div class="container max-w-4xl mx-auto">
+			<h1 class="text-6xl font-bold">Hello, I am Dzakie!</h1>
+			<p>Welcome to my website, feel free to browse posts below me</p>
+			<div className="flex flex-col items-center justify-center">
+				for _, item := range fileNames {
+					<a
+						href="#"
+						class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+					>
+						<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+							{ item }
+						</h5>
+					</a>
+				}
+			</div>
+		</div>
+	}
+}

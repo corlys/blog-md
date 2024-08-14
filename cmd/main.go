@@ -14,11 +14,23 @@ import (
 
 func main() {
 	server := gin.Default()
+	server.Static("/dist", "./dist")
+	server.GET("/", func(c *gin.Context) {
+		var fileNames []string
+		files, err := os.ReadDir("/blogs")
+		for _, item := range files {
+			fileNames = append(fileNames, item.Name())
+		}
+		if err != nil {
+			render(c, 500, views.ErrorMessage("Internal Server Error"))
+			return
+		}
+	})
 	server.GET("/blogs/:slug", func(c *gin.Context) {
 		slug := c.Param("slug")
 		markdownContent, err := markdownReader(slug)
 		if err != nil {
-			render(c, 500, views.NotFound())
+			render(c, 500, views.ErrorMessage("Item Not Found"))
 			return
 		}
 		var buf bytes.Buffer
