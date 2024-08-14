@@ -2,8 +2,10 @@ package views
 
 templ Blog(content templ.Component) {
 	@Base() {
-		<div class="text-2xl text-green-400">
-			@content
+		<div class="container max-w-4xl mx-auto mt-4">
+			<div class="prose mx-auto">
+				@content
+			</div>
 		</div>
 	}
 }
