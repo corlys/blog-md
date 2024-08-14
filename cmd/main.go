@@ -39,7 +39,6 @@ func main() {
 			render(c, 500, views.ErrorMessage("Internal Server Error"))
 			return
 		}
-		log.Println(markdownItems)
 		render(c, 200, views.Home(markdownItems))
 	})
 	server.GET("/blogs/:slug", func(c *gin.Context) {
