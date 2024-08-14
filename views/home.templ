@@ -1,18 +1,31 @@
 package views
 
-templ Home(fileNames []string) {
+import (
+	"github.com/corlys/blog-md/types"
+	"strings"
+)
+
+func deleteMd(slugMd string) string {
+	str := strings.SplitN(slugMd, ".", 2)
+	if len(str) == 1 {
+		return slugMd
+	}
+	return str[0]
+}
+
+templ Home(items []types.MarkdownItem) {
 	@Base() {
-		<div class="container max-w-4xl mx-auto">
-			<h1 class="text-6xl font-bold">Hello, I am Dzakie!</h1>
-			<p>Welcome to my website, feel free to browse posts below me</p>
+		<div class="container max-w-4xl mx-auto flex flex-col items-center">
+			<h1 class="text-6xl font-bold mb-10">Hello, I am Dzakie!</h1>
+			<p class="text-lg mb-20">Welcome to my website, feel free to browse posts below me</p>
 			<div className="flex flex-col items-center justify-center">
-				for _, item := range fileNames {
+				for _, item := range items {
 					<a
-						href={ templ.SafeURL("/blogs/" + item) }
+						href={ templ.SafeURL("/blogs/" + deleteMd(item.FileName)) }
 						class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
 					>
 						<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-							{ item }
+							{ item.FrontMatter.Title }
 						</h5>
 					</a>
 				}

@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/corlys/blog-md/types"
 	"github.com/corlys/blog-md/views"
 
 	"github.com/a-h/templ"
@@ -15,29 +16,35 @@ import (
 	"github.com/yuin/goldmark"
 )
 
-type FrontMatter struct {
-	Title string
-}
-
 func main() {
 	server := gin.Default()
 	server.Static("/dist", "./dist")
 	server.GET("/", func(c *gin.Context) {
-		var fileNames []string
+		var markdownItems []types.MarkdownItem
 		files, err := os.ReadDir("blogs/")
 		for _, item := range files {
-			fileNames = append(fileNames, item.Name())
+			metadata, _, err := markdownReader(item.Name())
+			if err != nil {
+				log.Println(err)
+			}
+			markdownItems = append(markdownItems, types.MarkdownItem{
+				FileName: item.Name(),
+				FrontMatter: types.FrontMatter{
+					Title: metadata.Title,
+				},
+			})
 		}
 		if err != nil {
 			log.Println(err)
 			render(c, 500, views.ErrorMessage("Internal Server Error"))
 			return
 		}
-		render(c, 200, views.Home(fileNames))
+		log.Println(markdownItems)
+		render(c, 200, views.Home(markdownItems))
 	})
 	server.GET("/blogs/:slug", func(c *gin.Context) {
 		slug := c.Param("slug")
-		matter, markdownContent, err := markdownReader(slug)
+		matter, markdownContent, err := markdownReader(slug + ".md")
 		if err != nil {
 			render(c, 500, views.ErrorMessage("Item Not Found"))
 			return
@@ -56,20 +63,20 @@ func render(c *gin.Context, status int, template templ.Component) error {
 	return template.Render(c.Request.Context(), c.Writer)
 }
 
-func markdownReader(slug string) (FrontMatter, string, error) {
-	var matter FrontMatter
-	f, err := os.Open("blogs/" + slug + ".md")
+func markdownReader(slugMd string) (types.FrontMatter, string, error) {
+	var matter types.FrontMatter
+	f, err := os.Open("blogs/" + slugMd)
 	if err != nil {
-		return FrontMatter{}, "", err
+		return types.FrontMatter{}, "", err
 	}
 	defer f.Close()
 	b, err := io.ReadAll(f)
 	if err != nil {
-		return FrontMatter{}, "", err
+		return types.FrontMatter{}, "", err
 	}
 	rest, err := frontmatter.Parse(strings.NewReader(string(b)), &matter)
 	if err != nil {
-		return FrontMatter{}, "", err
+		return types.FrontMatter{}, "", err
 	}
 	return matter, string(rest), nil
 }
